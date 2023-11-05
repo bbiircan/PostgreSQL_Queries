@@ -1,0 +1,113 @@
+61. En çok satılan ürünümün(adet bazında) adı, kategorisinin adı ve tedarikçisinin adı
+               							
+Select product_name,company_name,category_name from order_details od join products p on p.product_id = od.product_id 
+join suppliers s on p.supplier_id = s.supplier_id join categories c on p.category_id = c.category_id
+group by product_name, category_name, company_name
+order by sum(quantity) desc limit 1
+
+62. Kaç ülkeden müşterim var
+
+Select DISTINCT country from customers
+
+63. Hangi ülkeden kaç müşterimiz var
+
+Select country, COUNT(*) as musterim from customers group by country
+
+64. 3 numaralı ID ye sahip çalışan (employee) son Ocak ayından BUGÜNE toplamda ne kadarlık ürün sattı?
+
+Select e.employee_id, SUM(quantity*unit_price) as toplam_satilan from employees e join orders o on e.employee_id=o.employee_id 
+join order_details od on o.order_id=od.order_id  where date_part('month', order_date)=1 and order_date <=CURRENT_DATE 
+and e.employee_id=3 group by e.employee_id
+
+65. 10 numaralı ID ye sahip ürünümden son 3 ayda ne kadarlık ciro sağladım?
+
+Select p.product_id,SUM(od.quantity*od.unit_price) as ciro from products p join order_details od on p.product_id=od.product_id 
+join orders o on od.order_id=o.order_id 
+where od.product_id=10 and order_date >= '1998-05-06'::DATE - INTERVAL '3 months' group by p.product_id
+  
+--SELECT MAX(order_date) AS en_son_satis_tarihi FROM orders; EN SON TARİHİ BULUYORUZ
+--SELECT '1998-05-06'::DATE + INTERVAL '3 months' AS hesaplanan_tarih; SON TARİHİ KULLANARAK 
+
+66. Hangi çalışan şimdiye kadar toplam kaç sipariş almış..?
+
+Select e.employee_id, first_name, last_name, COUNT(order_id) as toplam_siparis from employees e
+left join orders o on e.employee_id = o.employee_id group by e.employee_id, first_name, last_name order by e.employee_id 
+
+67. 91 müşterim var. Sadece 89’u sipariş vermiş. Sipariş vermeyen 2 kişiyi bulun
+
+Select c.customer_id from customers c left join orders o on c.customer_id=o.customer_id where order_date is null
+
+68. Brazil’de bulunan müşterilerin Şirket Adı, TemsilciAdi, Adres, Şehir, Ülke bilgileri
+
+Select company_name, contact_name, address, city,country from customers where country='Brazil'
+
+69. Brezilya’da olmayan müşteriler
+
+Select customer_id,country from customers where country!='Brazil'
+
+70. Ülkesi (Country) YA Spain, Ya France, Ya da Germany olan müşteriler
+
+Select customer_id,country from customers where country IN('Spain', 'France', 'Germany')
+
+71. Faks numarasını bilmediğim müşteriler
+
+Select customer_id,fax from customers where fax is null
+
+72. Londra’da ya da Paris’de bulunan müşterilerim
+
+Select customer_id,city from customers where city IN('London', 'Paris')
+
+73. Hem Mexico D.F’da ikamet eden HEM DE ContactTitle bilgisi ‘owner’ olan müşteriler
+
+Select customer_id,city,contact_title from customers where city='México D.F.' and contact_title='Owner'
+
+74. C ile başlayan ürünlerimin isimleri ve fiyatları
+
+Select product_name,unit_price from products where product_name LIKE 'C%'
+
+75. Adı (FirstName) ‘A’ harfiyle başlayan çalışanların (Employees); Ad, Soyad ve Doğum Tarihleri
+
+Select first_name,last_name,birth_date from employees where first_name LIKE 'A%'
+
+76. İsminde ‘RESTAURANT’ geçen müşterilerimin şirket adları
+
+Select company_name from customers where UPPER(company_name) LIKE '%RESTAURANT%'
+
+77. 50$ ile 100$ arasında bulunan tüm ürünlerin adları ve fiyatları
+
+Select unit_price,product_name from products where unit_price between 50 and 100
+
+78. 1 temmuz 1996 ile 31 Aralık 1996 tarihleri arasındaki siparişlerin (Orders), SiparişID (OrderID) ve SiparişTarihi (OrderDate) bilgileri
+
+Select order_id,order_date from orders where date_part('Years', order_date)=1996 and date_part('Month', order_date) between 7 and 12
+
+79. Ülkesi (Country) YA Spain, Ya France, Ya da Germany olan müşteriler
+
+Select customer_id,country from customers where country IN('Spain', 'France', 'Germany')
+
+80. Faks numarasını bilmediğim müşteriler
+
+Select customer_id,fax from customers where fax is null
+
+81. Müşterilerimi ülkeye göre sıralıyorum:
+
+Select DISTINCT(country) from customers order by country 
+
+82. Ürünlerimi en pahalıdan en ucuza doğru sıralama, sonuç olarak ürün adı ve fiyatını istiyoruz
+
+Select product_name,unit_price from products order by unit_price desc
+
+83. Ürünlerimi en pahalıdan en ucuza doğru sıralasın, ama stoklarını küçükten-büyüğe doğru göstersin sonuç olarak ürün adı ve fiyatını istiyoruz
+
+Select product_name,unit_price,units_in_stock from products order by unit_price desc,units_in_stock 
+
+84. 1 Numaralı kategoride kaç ürün vardır..?
+
+Select count(*)from products where category_id=1
+
+85. Kaç farklı ülkeye ihracat yapıyorum..?
+
+Select COUNT(DISTINCT country) from customers
+
+
+
